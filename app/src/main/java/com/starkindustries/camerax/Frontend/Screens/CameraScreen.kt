@@ -79,13 +79,13 @@ fun PermissionsComposible() {
 @Preview(showBackground = true, showSystemUi = true)
 fun CameraScreen(){
     val context = LocalContext.current
-    var lifeCycleOwner = LocalLifecycleOwner.current
+    val lifeCycleOwner = LocalLifecycleOwner.current
     val previewView:PreviewView = remember {
         PreviewView(context)
     }
-    var cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-    var preview = androidx.camera.core.Preview.Builder().build()
-    var imageSelector = remember{
+    val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+    val preview = androidx.camera.core.Preview.Builder().build()
+    val imageSelector = remember{
         ImageCapture.Builder().build()
     }
 
@@ -128,5 +128,93 @@ fun CameraScreen(){
             }
         }
     }
+}
+
+@Composable
+fun PermissionHanding(){
+
+    var permissionList = listOf(android.Manifest.permission.CAMERA)
+
+    var permissionGranted by remember {
+        mutableStateOf(false)
+    }
+
+    var launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestMultiplePermissions()) { permission->
+        permissionGranted = permission[android.Manifest.permission.CAMERA]==true
+    }
+
+    if(permissionGranted)
+        TestComposible()
+    else{
+        Box(modifier = Modifier
+            .fillMaxSize()
+        , contentAlignment = Alignment.Center){
+            Button(onClick = { launcher.launch(permissionList.toTypedArray()) }) {
+                Text(text = "Permissions"
+                , fontSize = 20.sp
+                , fontWeight = FontWeight.W500
+                )
+            }
+        }
+    }
+
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun TestComposible(){
+    
+    var context = LocalContext.current
+    var lifeCycleOwner = LocalLifecycleOwner.current
+    var previewView = remember {
+        PreviewView(context)
+    }
+    var preview:androidx.camera.core.Preview = androidx.camera.core.Preview.Builder().build()
+    var cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+    var imageCapture = remember{
+        ImageCapture.Builder().build()
+    }
+
+    LaunchedEffect(Unit) {
+        var cameraProvider = context.getCameraProvider()
+        cameraProvider.unbindAll()
+        cameraProvider.bindToLifecycle(
+            lifecycleOwner = lifeCycleOwner
+            , cameraSelector = cameraSelector
+            ,preview
+            ,imageCapture
+        )
+        preview.setSurfaceProvider(previewView.surfaceProvider)
+    }
+
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+        , contentAlignment = Alignment.BottomCenter
+    ){
+        AndroidView(factory = { previewView }
+            , modifier = Modifier
+                .fillMaxSize())
+
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.Black.copy(alpha = 0.7f))
+            .padding(16.dp)
+            , contentAlignment = Alignment.Center){
+            IconButton(onClick = {
+
+            }
+
+                , modifier = Modifier
+                    .size(50.dp)
+                    .background(Color.White, CircleShape)
+                    .padding(8.dp)
+                    .background(Color.Red, CircleShape)) {
+
+            }
+        }
+    }
+    
 }
 

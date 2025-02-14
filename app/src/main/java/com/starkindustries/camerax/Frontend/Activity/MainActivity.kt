@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.starkindustries.camerax.Frontend.Screens.PermissionHanding
 import com.starkindustries.camerax.Frontend.Screens.PermissionsComposible
 import com.starkindustries.camerax.ui.theme.CameraXTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -23,7 +24,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             CameraXTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    PermissionsComposible()
+                    PermissionHanding()
                 }
             }
         }
